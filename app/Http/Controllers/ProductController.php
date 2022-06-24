@@ -7,6 +7,7 @@ use App\Models\ProductVariant;
 use App\Models\ProductVariantPrice;
 use App\Models\Variant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -17,7 +18,11 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return view('products.index');
+        // firstItem, total, lastItem
+
+        $products = Product::paginate(2);
+        
+        return view('products.index', compact('products'));
     }
 
     /**
