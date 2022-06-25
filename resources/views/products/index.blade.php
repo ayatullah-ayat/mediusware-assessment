@@ -7,14 +7,26 @@
 
 
     <div class="card">
-        <form action="" method="get" class="card-header">
+        <form action="/product" method="get" class="card-header">
             <div class="form-row justify-content-between">
                 <div class="col-md-2">
-                    <input type="text" name="title" placeholder="Product Title" class="form-control">
+                    <input type="text" name="title" value="{{ request()->title ?? '' }}" placeholder="Product Title"
+                        class="form-control">
                 </div>
                 <div class="col-md-2">
-                    <select name="variant" id="" class="form-control">
-
+                    <select name="variant" class="form-control">
+                        <option value="{{ null }}" selected>Select Variant</option>
+                        @foreach ($variant_products as $variant_product)
+                            <optgroup label="{{ $variant_product['variant_title'] }}">
+                                @foreach ($variant_product['variant_data'] as $item)
+                                    @if (request()->variant != null && request()->variant == $item->variant)
+                                        <option value="{{ $item->variant }}" selected>{{ $item->variant }}</option>
+                                    @else
+                                        <option value="{{ $item->variant }}">{{ $item->variant }}</option>
+                                    @endif
+                                @endforeach
+                            </optgroup>
+                        @endforeach
                     </select>
                 </div>
 
@@ -23,13 +35,15 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text">Price Range</span>
                         </div>
-                        <input type="text" name="price_from" aria-label="First name" placeholder="From"
-                            class="form-control">
-                        <input type="text" name="price_to" aria-label="Last name" placeholder="To" class="form-control">
+                        <input type="text" name="price_from" value="{{ request()->price_from ?? '' }}"
+                            aria-label="First name" placeholder="From" class="form-control">
+                        <input type="text" name="price_to" value="{{ request()->price_to ?? '' }}"
+                            aria-label="Last name" placeholder="To" class="form-control">
                     </div>
                 </div>
                 <div class="col-md-2">
-                    <input type="date" name="date" placeholder="Date" class="form-control">
+                    <input type="date" name="date" value="{{ request()->date ?? '' }}" placeholder="Date"
+                        class="form-control">
                 </div>
                 <div class="col-md-1">
                     <button type="submit" class="btn btn-primary float-right"><i class="fa fa-search"></i></button>
@@ -55,20 +69,25 @@
                         @forelse ($products as $index=>$product)
                             <tr>
                                 <td>{{ $index + $products->firstItem() }}</td>
-                                <td>{{ $product->title }} <br> Created at : {{ \Carbon\Carbon::parse($product->created_at)->diffForHumans() }}</td>
+                                <td>{{ $product->title }} <br> Created at :
+                                    {{ \Carbon\Carbon::parse($product->created_at)->diffForHumans() }}</td>
                                 <td>{{ $product->description }}</td>
                                 <td style="width: 30%">
-                                    <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant{{ $product->id }}">
+                                    <dl class="row mb-0" style="height: 80px; overflow: hidden"
+                                        id="variant{{ $product->id }}">
 
                                         @forelse ($product->productVariantPrice as $item)
-                                            
                                             <dt class="col-sm-3 pb-0">
-                                                {{ $item->productVariantBySize->variant ?? '' }}/ {{ $item->productVariantByColor->variant ?? '' }}/ {{ $item->productVariantByStyle->variant ?? '' }}
+                                                {{ $item->productVariantBySize->variant ?? '' }}/
+                                                {{ $item->productVariantByColor->variant ?? '' }}/
+                                                {{ $item->productVariantByStyle->variant ?? '' }}
                                             </dt>
                                             <dd class="col-sm-9">
                                                 <dl class="row mb-0">
-                                                    <dt class="col-sm-4 pb-0">Price : {{ number_format($item->price, 2) }}</dt>
-                                                    <dd class="col-sm-8 pb-0">InStock : {{ number_format($item->stock, 2) }}</dd>
+                                                    <dt class="col-sm-4 pb-0">Price :
+                                                        {{ number_format($item->price, 2) }}</dt>
+                                                    <dd class="col-sm-8 pb-0">InStock :
+                                                        {{ number_format($item->stock, 2) }}</dd>
                                                 </dl>
                                             </dd>
                                         @empty
@@ -77,7 +96,8 @@
 
 
                                     </dl>
-                                    <button onclick="$('#variant{{ $product->id }}').toggleClass('h-auto')" class="btn btn-sm btn-link">Show
+                                    <button onclick="$('#variant{{ $product->id }}').toggleClass('h-auto')"
+                                        class="btn btn-sm btn-link">Show
                                         more</button>
                                 </td>
                                 <td>
@@ -102,7 +122,8 @@
         <div class="card-footer">
             <div class="row justify-content-between">
                 <div class="col-md-6">
-                    <p>Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} out of {{ $products->total() }}</p>
+                    <p>Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} out of
+                        {{ $products->total() }}</p>
                 </div>
                 <div class="col-md-2">
 
@@ -113,3 +134,10 @@
         </div>
     </div>
 @endsection
+
+
+@push('js')
+    <script>
+        console.log('push js');
+    </script>
+@endpush
